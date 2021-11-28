@@ -1,5 +1,7 @@
 package com.bjpowernode.module.user;
 
+import com.bjpowernode.service.UserService;
+import com.bjpowernode.service.impl.UserServiceImpl;
 import com.gn.App;
 import com.bjpowernode.bean.Constant;
 import com.bjpowernode.bean.User;
@@ -21,6 +23,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -43,12 +46,15 @@ public class UserViewCtrl implements Initializable {
 
     ObservableList<User> users = FXCollections.observableArrayList();
 
+    private UserService userService = new UserServiceImpl();
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        users.add(new User(1, "张三", "正常", new BigDecimal(("100"))));
-        users.add(new User(2, "李四", "正常", new BigDecimal(("100"))));
-        users.add(new User(3, "王五", "正常", new BigDecimal(("100"))));
+        //创建对象存储在内存中
+        //Service层调用Dao层，Module层调用Service层查询用户数据
+        List<User> userList = userService.select();
+        users.addAll(userList);
         c1.setCellValueFactory(new PropertyValueFactory<>("id"));
         c2.setCellValueFactory(new PropertyValueFactory<>("name"));
         c3.setCellValueFactory(new PropertyValueFactory<>("money"));

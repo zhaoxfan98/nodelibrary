@@ -3,6 +3,8 @@ package com.bjpowernode.module.user;
 import com.bjpowernode.bean.Constant;
 import com.bjpowernode.bean.User;
 import com.bjpowernode.global.util.Alerts;
+import com.bjpowernode.service.UserService;
+import com.bjpowernode.service.impl.UserServiceImpl;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
@@ -32,6 +34,8 @@ public class UserHandleViewCtrl {
     //修改的user对象
     private User user;
 
+    private UserService userService = new UserServiceImpl();
+
     /*
         添加或修改数据
      */
@@ -45,6 +49,10 @@ public class UserHandleViewCtrl {
                 populate(user);
                 //设置状态为正常
                 user.setStatus(Constant.USER_OK);
+                //将user数据持久化到文件中
+                //调用Service将user数据持久化到文件中
+                userService.add(user);
+                //将数据添加到页面中
                 users.add(user);
             }else {
                 //修改操作

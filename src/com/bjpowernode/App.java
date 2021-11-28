@@ -38,7 +38,7 @@ public class App extends Application {
     public static HostServices              hostServices;
     private static AdminDetail adminDetail = null;
 
-    @Override
+    @Override       //加载页面
     public synchronized void init(){
         section = SectionManager.get();
 
@@ -146,6 +146,7 @@ public class App extends Application {
 
     private void load(String module, String name){
         try {
+            //ViewManager 是一个Map  load操作是将fxml文件加载
             ViewManager.getInstance().put(
                     name,
                     FXMLLoader.load(getClass().getResource("/com/bjpowernode/module/" + module + "/" + name + ".fxml"))

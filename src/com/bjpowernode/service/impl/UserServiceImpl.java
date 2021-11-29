@@ -37,4 +37,31 @@ public class UserServiceImpl implements UserService {
     public void add(User user) {
         userDao.add(user);
     }
+
+    /**
+     * 修改数据
+     * @param user
+     */
+    @Override
+    public void update(User user) {
+        userDao.update(user);
+    }
+
+    /**
+     * 删除数据
+     * @param id
+     */
+    @Override
+    public void delete(int id) {
+        userDao.delete(id);
+    }
+
+    /**
+     * 冻结用户
+     * @param id
+     */
+    @Override
+    public void frozen(int id) {
+        userDao.frozen(id);
+    }
 }

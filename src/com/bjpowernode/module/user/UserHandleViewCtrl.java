@@ -57,6 +57,7 @@ public class UserHandleViewCtrl {
             }else {
                 //ÐÞ¸Ä²Ù×÷
                 populate(this.user);
+                userService.update(user);
                 //Ë¢ÐÂ
                 userTableView.refresh();
             }

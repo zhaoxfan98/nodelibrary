@@ -71,7 +71,9 @@ public class UserViewCtrl implements Initializable {
                 Alerts.warning("未选择","请先选择要删除的数据");
                 return;
             }
-            this.users.remove(user);
+            //（若内存数据先删除，但文件数据删除时出现错误，则导致页面显示删除成功,但文件中还存在）
+            userService.delete(user.getId());       //操作文件数据先执行  优先保证硬盘数据的安全性
+            this.users.remove(user);                //操作内存数据
             Alerts.success("成功", "操作成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -103,6 +105,7 @@ public class UserViewCtrl implements Initializable {
             Alerts.warning("未选择","请先选择要修改的数据");
             return;
         }
+        userService.frozen(user.getId());
         user.setStatus(Constant.USER_FROZEN);
         userTableView.refresh();
     }

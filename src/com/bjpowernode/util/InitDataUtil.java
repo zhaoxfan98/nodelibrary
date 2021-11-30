@@ -1,5 +1,6 @@
 package com.bjpowernode.util;
 
+import com.bjpowernode.bean.Book;
 import com.bjpowernode.bean.Constant;
 import com.bjpowernode.bean.PathConstant;
 import com.bjpowernode.bean.User;
@@ -19,18 +20,27 @@ import java.util.List;
  */
 public class InitDataUtil {
     public static void main(String[] args) {
-        initUser(null);
+        //初始化用户数据
+        List<User> userList = new ArrayList<>();
+        userList.add(new User(1001, "赵小凡", Constant.USER_OK, BigDecimal.TEN));
+        initData(PathConstant.USER_PATH, userList);
+        //初始化图书数据  多态写法
+        List<Book> bookList = new ArrayList<>();
+        bookList.add(new Book(1, "Java入门", "张三", Constant.TYPE_COMPUTER, "123-1", "机工", Constant.STATUS_STORAGE));
+        bookList.add(new Book(1, "Java进阶", "张三", Constant.TYPE_COMPUTER, "123-2", "机工", Constant.STATUS_STORAGE));
+        initData(PathConstant.BOOK_PATH, bookList);
     }
 
     /**
-     * 初始化用户数据
+     * 初始化数据
+     * @param
      */
-    public static void initUser(List<User> userList) {
+    public static void initData(String path, List<?> list) {        //泛型
         ObjectOutputStream oos = null;
-        //io流操作
+        //创建相关文件夹
         try {
-            File directory = new File("user/");  //创建文件夹
-            File file = new File(PathConstant.USER_PATH);
+            File directory = new File(path.split("/")[0]+"/");
+            File file = new File(path);
             //判断文件夹是否存在
             if (!directory.exists()) {
                 directory.mkdir();
@@ -38,15 +48,8 @@ public class InitDataUtil {
             //判断文件是否存在
             if (!file.exists()) {
                 file.createNewFile();
-                List<User> list = new ArrayList<>();
-                //判断userList是否为空 为空则创建一些
-                if (userList == null) {
-                    list.add(new User(1001, "赵小凡", Constant.USER_OK, BigDecimal.TEN));
-                } else {
-                    list = userList;
-                }
                 //利用对象输出流将list数据写出到文件中
-                oos = new ObjectOutputStream(new FileOutputStream(PathConstant.USER_PATH));
+                oos = new ObjectOutputStream(new FileOutputStream(path));
                 oos.writeObject(list);
             }
         } catch (IOException e) {
@@ -60,5 +63,6 @@ public class InitDataUtil {
                 }
             }
         }
+
     }
 }

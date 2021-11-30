@@ -4,6 +4,7 @@ import com.bjpowernode.bean.Constant;
 import com.bjpowernode.bean.PathConstant;
 import com.bjpowernode.bean.User;
 import com.bjpowernode.dao.UserDao;
+import com.bjpowernode.util.BeanUtil;
 import com.sun.org.apache.bcel.internal.Const;
 
 import java.io.*;
@@ -97,8 +98,9 @@ public class UserDaoImpl implements UserDao {
                 //从list中查找要修改的数据
                 User originUser = list.stream().filter(u -> u.getId() == user.getId()).findFirst().get();
                 //修改数据
-                originUser.setName(user.getName());
-                originUser.setMoney(user.getMoney());
+//                originUser.setName(user.getName());
+//                originUser.setMoney(user.getMoney());
+                BeanUtil.populate(originUser, user);
 
                 //将数据持久化到文件
                 oos = new ObjectOutputStream(new FileOutputStream(PathConstant.USER_PATH));

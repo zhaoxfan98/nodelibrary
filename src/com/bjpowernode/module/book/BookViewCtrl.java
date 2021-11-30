@@ -1,6 +1,8 @@
 
 package com.bjpowernode.module.book;
 
+import com.bjpowernode.service.BookService;
+import com.bjpowernode.service.impl.BookServiceImpl;
 import com.gn.App;
 import com.bjpowernode.bean.Book;
 import com.bjpowernode.bean.Constant;
@@ -25,6 +27,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -59,12 +62,12 @@ public class BookViewCtrl implements Initializable {
 
     ObservableList<Book> books = FXCollections.observableArrayList();
 
+    private BookService bookService = new BookServiceImpl();
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        books.add(new Book(1, "java实战入门", "张三", Constant.TYPE_COMPUTER, "12-987", "XX出版社", Constant.STATUS_STORAGE));
-        books.add(new Book(2, "编程之道", "李四", Constant.TYPE_COMPUTER, "1245-987", "XX出版社", Constant.STATUS_STORAGE));
-        books.add(new Book(3, "颈椎病康复指南", "王五", Constant.TYPE_COMPUTER, "08712-987", "XX出版社", Constant.STATUS_STORAGE));
+        //查询 无条件
+        List<Book> bookList = bookService.select(null);
+        books.addAll(bookList);
         c1.setCellValueFactory(new PropertyValueFactory<>("id"));
         c2.setCellValueFactory(new PropertyValueFactory<>("bookName"));
         c3.setCellValueFactory(new PropertyValueFactory<>("author"));
@@ -94,6 +97,9 @@ public class BookViewCtrl implements Initializable {
         }
     }
 
+    /*
+        删除
+     */
     @FXML
     private void deleteBook() {
         try {
@@ -102,6 +108,7 @@ public class BookViewCtrl implements Initializable {
                 Alerts.warning("未选择","请先选择要删除的数据");
                 return;
             }
+            bookService.delete(book.getId());
             this.books.remove(book);
             Alerts.success("成功", "图书修改成功");
         } catch (Exception e) {
@@ -119,19 +126,14 @@ public class BookViewCtrl implements Initializable {
         String isbn = isbnField.getText();
         boolean bookFlag = "".equals(bookName);
         boolean isbnFlag = "".equals(isbn);
-        ObservableList<Book> result = books;
-        if (bookFlag && isbnFlag) {
-            return;
-        }else {
-            if (!bookFlag){
-                result = books.filtered(s -> s.getBookName().contains(bookName));
-            }
-            if (!isbnFlag) {
-                result = books.filtered(s -> s.getIsbn().contains(isbn));
-            }
-        }
 
-        books = new ObservableListWrapper<Book>(new ArrayList<Book>(result));
+        Book book = new Book();
+        book.setBookName(bookName);
+        book.setIsbn(isbn);
+        //条件查询
+        List<Book> bookList = bookService.select(book);
+        //将查询出来的list转成ObservableList
+        books = new ObservableListWrapper<Book>(new ArrayList<Book>(bookList));
         bookTableView.setItems(books);
     }
 
@@ -146,8 +148,7 @@ public class BookViewCtrl implements Initializable {
                 Alerts.warning("未选择","请先选择要修改的数据");
                 return;
             }
-
-           initStage(book);
+            initStage(book);
         } catch (IOException e) {
             e.printStackTrace();
         }

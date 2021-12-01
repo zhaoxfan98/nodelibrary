@@ -35,6 +35,11 @@ public class BookDaoImpl implements BookDao {
                     return list;
                 } else {
                     List<Book> conditionList = new ArrayList<>();
+                    //根据编号查询
+                    if (!(0 == book.getId())) {
+                        conditionList = list.stream().filter(b->b.getId() == book.getId()).collect(Collectors.toList());
+                        return conditionList;
+                    }
                     //条件查询
                     //判断两个查询条件同时输入
                     if (!"".equals(book.getBookName()) && !"".equals(book.getIsbn())) {

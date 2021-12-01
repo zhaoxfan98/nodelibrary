@@ -1,17 +1,16 @@
 package com.bjpowernode.util;
 
-import com.bjpowernode.bean.Book;
-import com.bjpowernode.bean.Constant;
-import com.bjpowernode.bean.PathConstant;
-import com.bjpowernode.bean.User;
+import com.bjpowernode.bean.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created on 2021/11/28.
@@ -22,13 +21,29 @@ public class InitDataUtil {
     public static void main(String[] args) {
         //初始化用户数据
         List<User> userList = new ArrayList<>();
-        userList.add(new User(1001, "赵小凡", Constant.USER_OK, BigDecimal.TEN));
+        userList.add(new User(1001, "赵小凡", Constant.USER_OK, BigDecimal.TEN, false));
         initData(PathConstant.USER_PATH, userList);
         //初始化图书数据  多态写法
         List<Book> bookList = new ArrayList<>();
         bookList.add(new Book(1, "Java入门", "张三", Constant.TYPE_COMPUTER, "123-1", "机工", Constant.STATUS_STORAGE));
         bookList.add(new Book(1, "Java进阶", "张三", Constant.TYPE_COMPUTER, "123-2", "机工", Constant.STATUS_STORAGE));
         initData(PathConstant.BOOK_PATH, bookList);
+        //初始化借阅数据
+        List<Lend> lendList = new ArrayList<>();
+        User user = new User(1001, "赵小凡", Constant.USER_OK, BigDecimal.TEN, false);
+        Book book = new Book(1, "Java入门", "张三", Constant.TYPE_COMPUTER, "123-1", "机工", Constant.STATUS_STORAGE);
+        Lend lend = new Lend();
+        //使用UUID生成编号
+        lend.setId(UUID.randomUUID().toString());
+        lend.setUser(user);
+        lend.setBook(book);
+        lend.setStatus(Constant.STATUS_LEND);
+        LocalDate begin = LocalDate.now();
+        lend.setLendDate(begin);
+        //设置归还日期
+        lend.setReturnDate(begin.plusDays(30));
+        lendList.add(lend);
+        initData(PathConstant.LEND_PATH, lendList);
     }
 
     /**

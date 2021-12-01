@@ -1,13 +1,16 @@
 package com.bjpowernode.bean;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
 /*
     借书
  */
-public class Lend {
-    private int id;
+public class Lend implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private String id;
 
     //借出的书籍
     private Book book;
@@ -24,30 +27,11 @@ public class Lend {
     //归还日期
     private LocalDate returnDate;
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Lend lend = (Lend) o;
-        return id == lend.id &&
-                Objects.equals(book, lend.book) &&
-                Objects.equals(user, lend.user) &&
-                Objects.equals(status, lend.status) &&
-                Objects.equals(lendDate, lend.lendDate) &&
-                Objects.equals(returnDate, lend.returnDate);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, book, user, status, lendDate, returnDate);
-    }
-
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -91,10 +75,39 @@ public class Lend {
         this.returnDate = returnDate;
     }
 
-    public Lend() {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Lend lend = (Lend) o;
+        return Objects.equals(id, lend.id) &&
+                Objects.equals(book, lend.book) &&
+                Objects.equals(user, lend.user) &&
+                Objects.equals(status, lend.status) &&
+                Objects.equals(lendDate, lend.lendDate) &&
+                Objects.equals(returnDate, lend.returnDate);
     }
 
-    public Lend(int id, Book book, User user, String status, LocalDate lendDate, LocalDate returnDate) {
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, book, user, status, lendDate, returnDate);
+    }
+
+    @Override
+    public String toString() {
+        return "Lend{" +
+                "id='" + id + '\'' +
+                ", book=" + book +
+                ", user=" + user +
+                ", status='" + status + '\'' +
+                ", lendDate=" + lendDate +
+                ", returnDate=" + returnDate +
+                '}';
+    }
+
+    public Lend() {}
+
+    public Lend(String id, Book book, User user, String status, LocalDate lendDate, LocalDate returnDate) {
         this.id = id;
         this.book = book;
         this.user = user;

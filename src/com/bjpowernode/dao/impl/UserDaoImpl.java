@@ -10,6 +10,7 @@ import com.sun.org.apache.bcel.internal.Const;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created on 2021/11/28.
@@ -31,6 +32,23 @@ public class UserDaoImpl implements UserDao {
         try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(PathConstant.USER_PATH))) {
             List<User> list = (List<User>)ois.readObject();
             return  list;
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        //出现异常，返回List对象
+        return new ArrayList<>();
+    }
+
+    /**
+     * 根据用户ID条件查询
+     * @param user
+     * @return
+     */
+    @Override
+    public List<User> select(User user) {
+        try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(PathConstant.USER_PATH))) {
+            List<User> list = (List<User>)ois.readObject();
+            return list.stream().filter(u->u.getId() == user.getId()).collect(Collectors.toList());
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -189,5 +207,36 @@ public class UserDaoImpl implements UserDao {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 查询出可以借书的用户
+     * @return
+     */
+    @Override
+    public List<User> selectUserToLend() {
+        ObjectInputStream ois = null;
+        ObjectOutputStream oos = null;
+        try {
+            ois = new ObjectInputStream(new FileInputStream(PathConstant.USER_PATH));
+            List<User> list = (List<User>)ois.readObject();
+            if (list != null) {
+                //查询出用户状态是正常且isLend是false
+                List<User> collect = list.stream().filter(u->Constant.USER_OK.equals(u.getStatus()) && false == u.isLend()).collect(Collectors.toList());
+                return collect;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        } finally {
+            try {
+                if (ois != null) {
+                    ois.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return new ArrayList<>();
     }
 }

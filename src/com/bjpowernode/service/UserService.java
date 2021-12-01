@@ -19,4 +19,6 @@ public interface UserService {
     void delete(int id);
 
     void frozen(int id);
+
+    List<User> selectUserToLend();
 }

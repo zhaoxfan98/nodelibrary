@@ -1,5 +1,7 @@
 package com.bjpowernode.module.book;
 
+import com.bjpowernode.service.LendService;
+import com.bjpowernode.service.impl.LendServiceImpl;
 import com.gn.App;
 import com.bjpowernode.bean.Book;
 import com.bjpowernode.bean.Constant;
@@ -9,6 +11,7 @@ import com.bjpowernode.module.user.UserSelectViewCtrl;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
@@ -47,15 +50,19 @@ public class BookLendViewCtrl {
         stage.close();
     }
 
+    private LendService lendService = new LendServiceImpl();
+    private TableView<Book> bookTableView;
+
     @FXML
     private void add() {
-        Lend lend = new Lend();
-        LocalDate now = LocalDate.now();
-        lend.setId(5);
-        lend.setLendDate(now);
-        lend.setReturnDate(now.plusDays(30));
-        lend.setStatus(Constant.LEND_LEND);
+        //操作文件
+        lendService.add(Integer.parseInt(bookIdField.getText()), Integer.parseInt(userIdField.getText()));
+        //操作界面
+        book.setStatus(Constant.STATUS_LEND);
+        user.setLend(true);
 
+        //刷新图书查询界面的数据
+        bookTableView.refresh();
         stage.close();
     }
 
@@ -108,5 +115,13 @@ public class BookLendViewCtrl {
         this.user = user;
         userIdField.setText(String.valueOf(user.getId()));
         userNameField.setText(user.getName());
+    }
+
+    public TableView<Book> getBookTableView() {
+        return bookTableView;
+    }
+
+    public void setBookTableView(TableView<Book> bookTableView) {
+        this.bookTableView = bookTableView;
     }
 }

@@ -12,12 +12,22 @@ public class User implements Serializable {
     private String name;
     private String status;
     private BigDecimal money;
+    //标志当前用户是否有借书
+    private boolean isLend;
 
-    public User(int id, String name, String status, BigDecimal money) {
+    public User(int id, String name, String status, BigDecimal money, boolean isLend) {
         this.id = id;
         this.name = name;
         this.status = status;
         this.money = money;
+        this.isLend = isLend;
+    }
+
+    public User() {
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
     }
 
     public int getId() {
@@ -52,14 +62,12 @@ public class User implements Serializable {
         this.money = money;
     }
 
-    @Override
-    public String toString() {
-        return "Admin{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", status='" + status + '\'' +
-                ", money=" + money +
-                '}';
+    public boolean isLend() {
+        return isLend;
+    }
+
+    public void setLend(boolean lend) {
+        isLend = lend;
     }
 
     @Override
@@ -67,7 +75,8 @@ public class User implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) &&
+        return id == user.id &&
+                isLend == user.isLend &&
                 Objects.equals(name, user.name) &&
                 Objects.equals(status, user.status) &&
                 Objects.equals(money, user.money);
@@ -75,11 +84,17 @@ public class User implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, status, money);
+        return Objects.hash(id, name, status, money, isLend);
     }
 
-    public User() {
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", status='" + status + '\'' +
+                ", money=" + money +
+                ", isLend=" + isLend +
+                '}';
     }
-
-
 }

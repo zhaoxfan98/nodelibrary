@@ -12,6 +12,9 @@ import java.util.List;
 public interface UserDao {
     //查询
     List<User> select();
+    //查询重载
+    List<User> select(User user);
+
     //增加
     void add(User user);
     //修改
@@ -20,5 +23,6 @@ public interface UserDao {
     void delete(int id);
     //冻结
     void frozen(int id);
-
+    //查询可以借书的用户
+    List<User> selectUserToLend();
 }

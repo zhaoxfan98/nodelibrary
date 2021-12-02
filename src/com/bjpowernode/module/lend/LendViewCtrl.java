@@ -1,7 +1,9 @@
 package com.bjpowernode.module.lend;
 
 import com.bjpowernode.service.LendService;
+import com.bjpowernode.service.UserService;
 import com.bjpowernode.service.impl.LendServiceImpl;
+import com.bjpowernode.service.impl.UserServiceImpl;
 import com.gn.App;
 import com.bjpowernode.bean.Book;
 import com.bjpowernode.bean.Constant;
@@ -29,6 +31,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -65,10 +68,48 @@ public class LendViewCtrl implements Initializable {
 
     ObservableList<Lend> lends = FXCollections.observableArrayList();
     private LendService lendService = new LendServiceImpl();
+    private UserService userService = new UserServiceImpl();
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         List<Lend> lendList = lendService.select(null);
+        //计算书籍逾期后的余额
+        lendList.forEach(d-> {
+            LocalDate returnDate = d.getReturnDate();
+            LocalDate now = LocalDate.now();
+            //计算时间差
+            Period period = Period.between(returnDate, now);
+            User user = d.getUser();
+            BigDecimal money = user.getMoney(); //当前余额
+            BigDecimal delay = BigDecimal.ZERO; //扣款金额
+            if (period.getDays() >= 1) {
+                /*
+                    逾期
+                    超30则扣款30  未超30则一天扣一元
+                    用户余额是否大于0，小于则冻结
+                 */
+                if (period.getDays() >= 30) {
+                    delay = new BigDecimal(30);
+                } else {
+                    delay = new BigDecimal(period.getDays());
+                }
+                //扣款
+                user.setMoney(money.subtract(delay));
+                //归还日期改为今日
+                d.setReturnDate(now);
+                //判断余额  是否需要冻结用户
+                if (BigDecimal.ZERO.compareTo(user.getMoney()) > 0) {
+                    user.setStatus(Constant.USER_FROZEN);
+                }
+                //调Service层 改数据
+                lendService.update(d);
+                userService.update(user);
+            }
+        });
+
+
+
         lends.addAll(lendList);
 
         c1.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -122,8 +163,10 @@ public class LendViewCtrl implements Initializable {
             Alerts.warning("未选择","请先选择要归还的书籍");
             return;
         }
-        lend.setStatus(Constant.LEND_RETURN);
-        lend.setReturnDate(LocalDate.now());
+        List<Lend> lendList = lendService.returnBook(lend);
+
+        ObservableListWrapper<Lend> lends = new ObservableListWrapper<>(new ArrayList<>(lendList));
+        lendTableView.setItems(lends);
     }
 
     /*

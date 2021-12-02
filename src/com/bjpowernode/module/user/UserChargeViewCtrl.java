@@ -3,6 +3,8 @@ package com.bjpowernode.module.user;
 import com.bjpowernode.bean.Constant;
 import com.bjpowernode.bean.User;
 import com.bjpowernode.global.util.Alerts;
+import com.bjpowernode.service.UserService;
+import com.bjpowernode.service.impl.UserServiceImpl;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -20,6 +22,7 @@ public class UserChargeViewCtrl {
     private User user;
 
     private TableView<User> userTableView;
+    private UserService userService = new UserServiceImpl();
 
     /*
         充值
@@ -27,20 +30,14 @@ public class UserChargeViewCtrl {
     @FXML
     private void charge() {
         try {
-            //获取充值之前的余额
-            BigDecimal before = user.getMoney();
             //本次充值的金额
             BigDecimal money = new BigDecimal(moneyField.getText());
-            //计算充值之后余额是否大于0
-            BigDecimal after = before.add(money);
+            User chargeUser = userService.charge(user, money);
+            user = chargeUser;
 
-            if (after.compareTo(BigDecimal.ZERO) >= 0) {
-                //修改用户状态
-                user.setStatus(Constant.USER_OK);
-            }
             userTableView.refresh();
             stage.close();
-            Alerts.success("成功", "操作成功");
+            Alerts.success("成功", "充值成功");
         } catch (Exception e) {
             e.printStackTrace();
             Alerts.error("失败","操作失败");

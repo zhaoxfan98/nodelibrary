@@ -2,6 +2,7 @@ package com.bjpowernode.service;
 
 import com.bjpowernode.bean.User;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -21,4 +22,6 @@ public interface UserService {
     void frozen(int id);
 
     List<User> selectUserToLend();
+
+    User charge(User user, BigDecimal money);
 }

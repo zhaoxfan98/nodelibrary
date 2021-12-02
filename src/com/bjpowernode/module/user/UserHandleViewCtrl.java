@@ -61,7 +61,6 @@ public class UserHandleViewCtrl {
                 //刷新
                 userTableView.refresh();
             }
-
             stage.close();
             Alerts.success("成功", "操作成功");
         } catch (Exception e) {

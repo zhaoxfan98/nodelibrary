@@ -1,10 +1,15 @@
 package com.bjpowernode.service.impl;
 
+import com.bjpowernode.bean.Constant;
+import com.bjpowernode.bean.Lend;
 import com.bjpowernode.bean.User;
+import com.bjpowernode.dao.LendDao;
 import com.bjpowernode.dao.UserDao;
+import com.bjpowernode.dao.impl.LendDaoImpl;
 import com.bjpowernode.dao.impl.UserDaoImpl;
 import com.bjpowernode.service.UserService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -18,7 +23,7 @@ import java.util.List;
  */
 public class UserServiceImpl implements UserService {
     private UserDao userDao = new UserDaoImpl();
-
+    private LendDao lendDao = new LendDaoImpl();
     /**
      * 查询
      * @return
@@ -65,8 +70,43 @@ public class UserServiceImpl implements UserService {
         userDao.frozen(id);
     }
 
+    /**
+     * 查询可以借阅书籍的用户
+     * @return
+     */
     @Override
     public List<User> selectUserToLend() {
         return userDao.selectUserToLend();
+    }
+
+    /**
+     * 用户充值
+     * @param user
+     * @param money
+     * @return
+     */
+    @Override
+    public User charge(User user, BigDecimal money) {
+        BigDecimal sum = money.add(user.getMoney());
+        //判断充值后余额是否大于0
+        if (BigDecimal.ZERO.compareTo(sum) < 0) {
+            //修改用户状态
+            user.setStatus(Constant.USER_OK);
+        }
+        user.setMoney(sum);
+        //用户数据更新
+        userDao.update(user);
+        //借阅文件中用户数据
+        List<Lend> lendList = lendDao.select(null);
+        for (int i=0; i<lendList.size(); i++) {
+            Lend lend = lendList.get(i);
+            if (lend.getUser().getId() == user.getId()) {
+                lend.setUser(user);
+                lendDao.update(lend);
+                break;
+            }
+        }
+
+        return user;
     }
 }
